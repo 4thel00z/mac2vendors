@@ -23,7 +23,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.0.0',
 
-    description='Convert mac addresses to vendor information/ names',
+    description='Convert mac addresses to vendor information/ names !',
     long_description=long_description,
 
     # The project's main homepage.
