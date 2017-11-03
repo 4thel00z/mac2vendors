@@ -1,12 +1,20 @@
+import json
+import os.path
 import re
+from typing import Union, Dict
 
 
-def write_mac_json(source, destination):
+def write_mac_json(source: str, destination: str) -> None:
     '''
-        >>> write_mac_json("vendors.txt","vendor.json")
+        >>> source = "vendors.txt"
+        >>> destination = "vendors.json"
+        >>> write_mac_json(source=source,destination=destination)
+        >>> assert os.path.isfile(destination)
 
-        :param source: str
-        :param destination: str
+        :param source: Filename of the file containing the mac vendor mapping
+        :type source: str
+        :param destination: Filename of the json file that should contain the final vendor mapping
+        :type destination: str
         :return:
     '''
 
@@ -25,19 +33,49 @@ def write_mac_json(source, destination):
         write_json(destination, payload)
 
 
-def write_json(destination, payload):
-    import json
+def write_json(destination: str, payload: Union[str, Dict]) -> None:
+    '''
+
+    :param destination: The file to write the payload to
+    :param payload: The payload
+    :return:
+    '''
     with open(destination, mode="w") as outputFile:
         json.dump(payload, outputFile)
 
 
-def read_json(source):
-    import json
+def read_json(source: str):
+    '''
+
+    :param source: Name of the json file to read
+    :return:
+    '''
     with open(source) as inputFile:
         return json.load(inputFile)
 
 
 def get_mac_vendor(source: str = "vendors.json", mac: str = "00:00:00"):
+    '''
+    Pretest of get_mac_vendor:
+    >>> write_mac_json("vendors.txt","vendor.json")
+
+    >>> get_mac_vendor( source="vendors.json", mac="00:00:14:00:00:14" )
+    [['00:00:14', 'Netronix']]
+
+    >>> get_mac_vendor( source="vendors.json", mac="00:00:13" )
+    Traceback (most recent call last):
+        ...
+        raise ValueError("[%s] is not a valid mac address" % mac)
+    ValueError: [00:00:13] is not a valid mac address
+
+
+    :param source:
+    :type source: str
+    :param mac:
+    :type mac: str
+    :return:
+    '''
+
     assert_is_mac(mac)
     mac_addresses = read_json(source=source)
     short = mac_addresses["short"]
@@ -54,7 +92,7 @@ def get_mac_vendor(source: str = "vendors.json", mac: str = "00:00:00"):
                                                                      mac.startswith(key)]
 
 
-def assert_is_mac(mac):
+def assert_is_mac(mac: str):
     '''
     >>> assert_is_mac("asdasd")
     Traceback (most recent call last):
@@ -73,5 +111,3 @@ def assert_is_mac(mac):
     '''
     if not re.search(r"([\dA-F]{2}(?:[-:][\dA-F]{2}){5})", mac, re.I) is not None:
         raise ValueError("[%s] is not a valid mac address" % mac)
-
-
