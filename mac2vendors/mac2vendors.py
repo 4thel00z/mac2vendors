@@ -3,9 +3,10 @@ import logging
 import os.path
 import re
 from typing import Union, Dict
+import pkg_resources
 
 LOGGER = logging.getLogger(__name__)
-
+PACKAGE_NAME = "mac2vendors"
 
 def write_mac_json(source: str, destination: str) -> None:
     '''
@@ -20,8 +21,10 @@ def write_mac_json(source: str, destination: str) -> None:
         :type destination: str
         :return:
     '''
-    LOGGER.debug("write_mac_json - source: %s destination: %s" % (source, destination))
-    with open(source) as inputFile:
+    _source = pkg_resources.resource_filename(PACKAGE_NAME, source)
+    _destination = pkg_resources.resource_filename(PACKAGE_NAME, destination)
+    LOGGER.debug("write_mac_json - source: %s destination: %s" % (_source, _destination))
+    with open(_source) as inputFile:
         LOGGER.debug(inputFile)
         lines = [line.split("\t") for line in inputFile.readlines() if
                  not line.startswith("  # ") or not line.strip() == ""]
@@ -34,7 +37,7 @@ def write_mac_json(source: str, destination: str) -> None:
             "long": {line[0]: line for line in long}
         }
 
-        write_json(destination, payload)
+        write_json(_destination, payload)
 
 
 def write_json(destination: str, payload: Union[str, Dict]) -> None:
@@ -90,12 +93,13 @@ def get_mac_vendor(source: str = "vendors.json", mac_address: str = "00:00:00", 
     :type mac: str
     :return:
     '''
+    _source = pkg_resources.resource_filename(PACKAGE_NAME, source)
     try:
         assert_is_mac(mac_address, strict)
     except ValueError as error:
         print(error)
         return None
-    mac_addresses = read_json(source=source)
+    mac_addresses = read_json(source=_source)
     short = mac_addresses["short"]
     long = mac_addresses["long"]
 
