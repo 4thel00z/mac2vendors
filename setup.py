@@ -3,11 +3,12 @@ See:
 https://github.com/mwheregroup/swag
 """
 
-# Always prefer setuptools over distutils
-from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
+
+# Always prefer setuptools over distutils
+from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
 
@@ -92,7 +93,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-    #    'sample': ['package_data.dat'],
+           'data': ['vendor.*'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
@@ -108,7 +109,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-
+            "mtv=mac2vendors.cli:mtv"
         ],
     },
 )
