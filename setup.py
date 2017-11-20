@@ -22,7 +22,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.1.5',
+    version='1.1.6',
 
     description='Convert mac addresses to vendor information/ names !',
     long_description=long_description,
@@ -93,7 +93,7 @@ setup(
     # installed, specify them here.  If using Python 2.6 or less, then these
     # have to be included in MANIFEST.in as well.
     package_data={
-        'mac2vendors': ['data/vendor.*'],
+        'mac2vendors': ['vendor.*'],
     },
 
     # Although 'package_data' is the preferred approach, in some case you may
