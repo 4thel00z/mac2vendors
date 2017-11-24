@@ -9,18 +9,18 @@ parser = ArgumentParser("mtv")
 
 sub_parsers = parser.add_subparsers(help='[command] help', dest="command")
 
-writeParser = sub_parsers.add_parser("write",
-                                     help="Write the vendor mapping json destination to the file path given via --path."
+write_parser = sub_parsers.add_parser("write",
+                                      help="Write the vendor mapping json destination to the file path given via --path."
                                           "Defaults to vendors.json")
 
-writeParser.add_argument("-p", "--path", type=str, default="./vendors.json", )
+write_parser.add_argument("-p", "--path", type=str, default="./vendors.json", )
 
-macParser = sub_parsers.add_parser("mac", help="Translates the mac address to a vendor mapping.")
+mac_parser = sub_parsers.add_parser("mac", help="Translates the mac address to a vendor mapping.")
 
-macParser.add_argument("mac_address", type=str, default="",
-                       help="the mac to translate. A mac looks like this: xx:xx:xx:xx:xx:xx with x hexadecimal.")
-macParser.add_argument("-s", "--strict", default=False, action="store_true",
-                       help="Check if a valid mac_address was inserted")
+mac_parser.add_argument("mac_address", type=str, default="",
+                        help="the mac to translate. A mac looks like this: xx:xx:xx:xx:xx:xx with x hexadecimal.")
+mac_parser.add_argument("-s", "--strict", default=False, action="store_true",
+                        help="Check if a valid mac_address was inserted")
 
 
 def mtv():
