@@ -1,6 +1,9 @@
 # Include the license file
 include LICENSE.txt
 
+include mac2vendors/vendors.json
+include mac2vendors/vendors.txt
+
 # Include the data files
 recursive-include data *
 
