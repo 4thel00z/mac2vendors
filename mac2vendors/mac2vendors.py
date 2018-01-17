@@ -2,15 +2,20 @@ import json
 import logging
 import os.path
 import re
+import warnings
 from typing import Union, Dict
+
 import pkg_resources
+
+import vendors_json
 
 LOGGER = logging.getLogger(__name__)
 PACKAGE_NAME = "mac2vendors"
 
+
 def write_mac_json(source: str, destination: str) -> None:
     '''
-        >>> source = "vendors.txt"
+        >>> source = "vendors.py"
         >>> destination = "vendors.json"
         >>> write_mac_json(source=source,destination=destination)
         >>> assert os.path.isfile(destination)
@@ -21,10 +26,29 @@ def write_mac_json(source: str, destination: str) -> None:
         :type destination: str
         :return:
     '''
+    warnings.warn("deprecated", DeprecationWarning)
     _source = pkg_resources.resource_filename(PACKAGE_NAME, source)
     _destination = pkg_resources.resource_filename(PACKAGE_NAME, destination)
     LOGGER.debug("write_mac_json - source: %s destination: %s" % (_source, _destination))
-    with open(_source) as inputFile:
+
+    if source != "vendors.py":
+
+        with open(_source) as inputFile:
+            LOGGER.debug(inputFile)
+            lines = [line.split("\t") for line in inputFile.readlines() if
+                     not line.startswith("  # ") or not line.strip() == ""]
+
+            short = [[line[0]] + [line[1].strip("\n")] for line in lines if len(line) == 2]
+            long = [line[0:2] + [line[2].rstrip("\n")] for line in lines if len(line) == 3]
+
+            payload = {
+                "short": {line[0]: line for line in short},
+                "long": {line[0]: line for line in long}
+            }
+
+            write_json(_destination, payload)
+    else:
+        inputFile = vendors_file
         LOGGER.debug(inputFile)
         lines = [line.split("\t") for line in inputFile.readlines() if
                  not line.startswith("  # ") or not line.strip() == ""]
@@ -47,6 +71,7 @@ def write_json(destination: str, payload: Union[str, Dict]) -> None:
     :param payload: The payload
     :return:
     '''
+    warnings.warn("deprecated", DeprecationWarning)
     with open(destination, mode="w", encoding="utf-8") as outputFile:
         serialized_payload = json.dump(payload, outputFile)
 
@@ -57,6 +82,7 @@ def read_json(source: str):
     :param source: Name of the json file to read
     :return:
     '''
+    warnings.warn("deprecated", DeprecationWarning)
     with open(source, mode="r", encoding="utf-8") as inputFile:
         return json.load(inputFile)
 
@@ -69,16 +95,16 @@ def _assert_mapping_file_exists(file_path: str = "vendors.json", force_refresh: 
     :type str:
     :return:
     '''
-
+    warnings.warn("deprecated", DeprecationWarning)
     exists = os.path.exists(file_path)
     if not exists or force_refresh:
-        write_mac_json("vendors.txt", "vendors.json")
+        write_mac_json("vendors.py", "vendors.json")
 
 
 def get_mac_vendor(source: str = "vendors.json", mac_address: str = "00:00:00", strict: bool = False):
     '''
     Pretest of get_mac_vendor:
-    >>> write_mac_json("vendors.txt","vendors.json")
+    >>> write_mac_json("vendors.py","vendors.json")
 
     >>> get_mac_vendor( source="vendors.json", mac_address="00:00:14:00:00:14" )
     [['00:00:14', 'Netronix']]
@@ -93,6 +119,7 @@ def get_mac_vendor(source: str = "vendors.json", mac_address: str = "00:00:00", 
     :type mac: str
     :return:
     '''
+    warnings.warn("deprecated", DeprecationWarning)
     _source = pkg_resources.resource_filename(PACKAGE_NAME, source)
     try:
         assert_is_mac(mac_address, strict)
@@ -102,6 +129,47 @@ def get_mac_vendor(source: str = "vendors.json", mac_address: str = "00:00:00", 
     mac_addresses = read_json(source=_source)
     short = mac_addresses["short"]
     long = mac_addresses["long"]
+
+    if len(mac_address) >= 8:
+        prefix = mac_address[:8]
+        mac_identifier = short[prefix] if prefix in short else long[prefix] if prefix in long else None
+        if mac_identifier is not None:
+            return [mac_identifier]
+        return []
+
+    long_matches = [m for key, m in long.items() if mac_address.startswith(key)]
+    short_matches = [m for key, m in short.items() if
+                     mac_address.startswith(key) and len(mac_address) >= len(key) or key.startswith(
+                         mac_address) and len(key) > len(mac_address)]
+
+    return short_matches + long_matches
+
+
+def get_vendor(mac_address: str = "00:00:00", strict: bool = False):
+    '''
+    Pretest of get_mac_vendor:
+
+    >>> get_vendor( mac_address="00:00:14:00:00:14" )
+    [['00:00:14', 'Netronix']]
+
+    >>> get_vendor( mac_address="00:00:13", strict=True)
+    [00:00:13] is not a valid mac address
+
+
+    :param source:
+    :type source: str
+    :param mac:
+    :type mac: str
+    :return:
+    '''
+    try:
+        assert_is_mac(mac_address, strict)
+    except ValueError as error:
+        print(error)
+        return None
+    _vendors_json = vendors_json.vendors_json
+    short = _vendors_json["short"]
+    long = _vendors_json["long"]
 
     if len(mac_address) >= 8:
         prefix = mac_address[:8]
