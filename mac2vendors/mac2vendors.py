@@ -7,7 +7,7 @@ from typing import Union, Dict
 
 import pkg_resources
 
-import vendors_json
+from mac2vendors import vendors_json
 
 LOGGER = logging.getLogger(__name__)
 PACKAGE_NAME = "mac2vendors"
