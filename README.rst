@@ -15,12 +15,10 @@ Usage
 
     mtv --help
 
-    usage: mtv [-h] {write,mac} ...
+    usage: mtv [-h] {mac} ...
 
     positional arguments:
-      {write,mac}  [command] help
-        write      Write the vendor mapping json destination to the file path
-                   given via --path.Defaults to vendors.json
+      {mac}  [command] help
         mac        Translates the mac address to a vendor mapping.
 
     optional arguments:
@@ -34,7 +32,7 @@ Use from code
 
 ::
 
-    from mac2vendors.mac2vendors import get_mac_vendor
-    vendor_list = get_mac_vendor(mac_address="00:00:00")
+    from mac2vendors import get_mac_vendor
+    vendor_list = get_vendor(mac_address="00:00:00")
     print(vendor_list)
     [['00:00:00', '00:00:00', 'Officially Xerox, but 0:0:0:0:0:0 is more common']]
