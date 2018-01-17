@@ -1,7 +1,7 @@
 import logging
 from argparse import ArgumentParser
 
-from .mac2vendors import write_mac_json, _assert_mapping_file_exists, get_mac_vendor
+from .mac2vendors import get_vendor
 
 logger = logging.getLogger(__name__)
 
@@ -11,7 +11,7 @@ sub_parsers = parser.add_subparsers(help='[command] help', dest="command")
 
 write_parser = sub_parsers.add_parser("write",
                                       help="Write the vendor mapping json destination to the file path given via --path."
-                                          "Defaults to vendors.json")
+                                           "Defaults to vendors.json")
 
 write_parser.add_argument("-p", "--path", type=str, default="./vendors.json", )
 
@@ -25,13 +25,12 @@ mac_parser.add_argument("-s", "--strict", default=False, action="store_true",
 
 def mtv():
     args = parser.parse_args()
-    if args.command == "write":
-        write_mac_json("vendors.txt", args.path)
-    elif args.command == "mac":
-        _assert_mapping_file_exists(force_refresh=True)
-        mapping = get_mac_vendor("vendors.json", mac_address=args.mac_address, strict=args.strict)
+    if args.command == "mac":
+        mapping = get_vendor(mac_address=args.mac_address, strict=args.strict)
         if mapping is not None:
             print(mapping)
+        else:
+            print("Could not find {mac_address}".format(mac_address=args.mac_address))
     else:
         parser.print_help()
 
