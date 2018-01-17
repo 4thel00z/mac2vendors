@@ -9,12 +9,6 @@ parser = ArgumentParser("mtv")
 
 sub_parsers = parser.add_subparsers(help='[command] help', dest="command")
 
-write_parser = sub_parsers.add_parser("write",
-                                      help="Write the vendor mapping json destination to the file path given via --path."
-                                           "Defaults to vendors.json")
-
-write_parser.add_argument("-p", "--path", type=str, default="./vendors.json", )
-
 mac_parser = sub_parsers.add_parser("mac", help="Translates the mac address to a vendor mapping.")
 
 mac_parser.add_argument("mac_address", type=str, default="",
